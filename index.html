@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lista de Animais</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 0;
+        padding: 20px;
+    }
+    h1 {
+        text-align: center;
+    }
+    ul {
+        list-style-type: none;
+        padding: 0;
+    }
+    li {
+        margin-bottom: 10px;
+        border-bottom: 1px solid #ccc;
+        padding-bottom: 5px;
+    }
+    button {
+        display: block;
+        margin: 20px auto;
+        padding: 10px 20px;
+        background-color: #007bff;
+        color: #fff;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+    button:hover {
+        background-color: #0056b3;
+    }
+</style>
+</head>
+<body>
+
+<h1>Lista de Animais</h1>
+
+<ul id="animal-list">
+    <!-- Aqui serão inseridos os dados do backend -->
+</ul>
+
+<button id="add-animal-btn">Cadastrar Animal</button>
+
+<script>
+    const apiUrl = 'https://664139c0a7500fcf1a9fdf64.mockapi.io/animais/animal';
+
+    // Função para obter os dados do backend e exibir na lista
+    async function populateAnimalList() {
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+
+            const animalList = document.getElementById('animal-list');
+            animalList.innerHTML = '';
+
+            data.forEach(animal => {
+                const listItem = document.createElement('li');
+                let animalInfo = `${animal.nome}, ${animal.idade} anos, ${animal.raca}`;
+                if (animal.id) {
+                    animalInfo = `${animal.id} - ${animalInfo}`;
+                }
+                listItem.textContent = animalInfo;
+                animalList.appendChild(listItem);
+            });
+        } catch (error) {
+            console.error('Erro ao obter os dados do backend:', error);
+        }
+    }
+
+    // Função para cadastrar o animal Totó
+    async function cadastrarAnimal() {
+        const novoAnimal = {
+            nome: 'Totó',
+            idade: 12,
+            raca: 'cachorro'
+        };
+
+        try {
+            const response = await fetch(apiUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(novoAnimal)
+            });
+
+            if (response.ok) {
+                console.log('Animal "Totó" cadastrado com sucesso!');
+                populateAnimalList(); // Atualiza a lista após cadastrar o animal
+            } else {
+                console.error('Falha ao cadastrar o animal "Totó":', response.statusText);
+            }
+        } catch (error) {
+            console.error('Erro ao cadastrar o animal "Totó":', error);
+        }
+    }
+    
+    document.getElementById('add-animal-btn').addEventListener('click', cadastrarAnimal);
+
+    populateAnimalList();
+</script>
+
+</body>
+</html>
